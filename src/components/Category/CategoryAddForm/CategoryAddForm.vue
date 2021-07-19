@@ -113,7 +113,7 @@ export default {
                         this.state = "READY";
                         if (error.response.data.errors.Title)
                         {
-                            this.errors.idError = error.response.data.errors.Id[0];
+                            this.errors.titleError = error.response.data.errors.Id[0];
                         }
                     }
                     else if (error.response.status === 404)

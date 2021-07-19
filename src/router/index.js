@@ -5,6 +5,12 @@ import Main from '../components/Main.vue'
 import CategoryAddForm from '../components/Category/CategoryAddForm/CategoryAddForm.vue';
 import CategoryEditForm from '../components/Category/CategoryEditForm/CategoryEditForm.vue';
 import CategoryRemovePrompt from '../components/Category/CategoryRemovePrompt/CategoryRemovePrompt.vue';
+import TaskCategoryList from '../components/Task/TaskCategoryList/TaskCategoryList.vue';
+import TaskActiveList from '../components/Task/TaskActiveList/TaskActiveList.vue';
+import TaskCompleteList from '../components/Task/TaskCompleteList/TaskCompleteList.vue';
+import TaskAddForm from '../components/Task/TaskAddForm/TaskAddForm.vue';
+import TaskEditForm from '../components/Task/TaskEditForm/TaskEditForm.vue';
+import TaskRemovePrompt from '../components/Task/TaskRemovePrompt/TaskRemovePrompt.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -30,6 +36,33 @@ const router = createRouter({
             path: '/category/remove/:id',
             component: CategoryRemovePrompt,
             props: true
+        },
+        {
+            path: '/task/category/:id',
+            component: TaskCategoryList,
+            props: true,
+        },
+        {
+            path: '/task/active',
+            component: TaskActiveList,
+        },
+        {
+            path: '/task/complete',
+            component: TaskCompleteList,
+        },
+        {
+            path: '/task/add',
+            component: TaskAddForm,
+        },
+        {
+            path: '/task/edit/:id',
+            component: TaskEditForm,
+            props: true,
+        },
+        {
+            path: '/task/remove/:id',
+            component: TaskRemovePrompt,
+            props: true,
         },
         {
             path: '/:pathMatch(.*)*',

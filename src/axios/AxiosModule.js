@@ -45,7 +45,7 @@ const axiosModule = {
             },
             getActiveTasksByCategoryId(categoryId)
             {
-                return instance.get(`Home/getActiveTasksByCategoryId?id=${categoryId}`);
+                return instance.get(`Home/getActiveTasksByCategoryId?categoryId=${categoryId}`);
             },
             getCompleteTasks()
             {
@@ -53,11 +53,11 @@ const axiosModule = {
             },
             getCompleteTasksByCategoryId(categoryId)
             {
-                return instance.get(`Home/getCompleteTasksByCategoryId?id=${categoryId}`);
+                return instance.get(`Home/getCompleteTasksByCategoryId?categoryId=${categoryId}`);
             },
             getTasksByCategoryId(categoryId)
             {
-                return instance.get(`Home/getTasksByCategoryId?id=${categoryId}`); 
+                return instance.get(`Home/getTasksByCategoryId?categoryId=${categoryId}`); 
             }
         },
         post: {

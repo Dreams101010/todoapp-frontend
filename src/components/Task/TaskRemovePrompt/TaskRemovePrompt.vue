@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="this.state === 'READY'" class="mainDialog">
-            <div>Do you want to delete this category?</div>
+            <div>Do you want to delete this task?</div>
             <div>
                 <button @click="onDelete">Yes</button>
                 <button @click="onCancel">No</button>
@@ -26,20 +26,21 @@ export default {
     methods: {
         ...mapActions(
             {
-                categoryRemove : "categoryRemove",
+                taskRemove : "taskRemove",
             }
         ),
         onDelete()
         {
-            this.categoryRemove(this.id)
-                .then(() => this.$router.push("/category"))
+            this.taskRemove(this.id)
+                .then(() => this.$router.go(-1))
                 .catch(() => this.state = "ERROR");
                 // TODO: handle 404
                 // TODO: handle case when category cannot be removed because it still has tasks
+                // TODO: handle empty history case
         },
         onCancel()
         {
-            this.$router.push("/category");
+            this.$router.go(-1);
         },
     }
 }

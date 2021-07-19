@@ -4,21 +4,28 @@
             Loading... Please wait.
         </div>
         <div v-if="this.state === 'READY'">
-            <button @click="$router.push('/category/add')">Add</button>
-            <category-list-item v-for="item in categories" v-bind:key="item.id" :item="item"></category-list-item>
+            <button @click="$router.push('/task/add')">Add</button>
+            <task-category-list-item v-for="item in tasks" v-bind:key="item.id" :item="item"></task-category-list-item>
         </div>
         <div v-if="this.state === 'LOADING_ERROR'">
-            An error has occured while loading the category list.
+            An error has occured while loading the task list.
         </div>
     </div>
 </template>
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
-import CategoryListItem from './CategoryListItem.vue';
+import TaskCategoryListItem from './TaskCategoryListItem.vue'
 
 export default {
-    components: { CategoryListItem },
+    name: "task-category-list",
+    props : {
+        id : String,
+    },
+    components:
+    {
+        TaskCategoryListItem
+    },
     data: function() {
         return {
             state : "INITIAL"
@@ -26,19 +33,19 @@ export default {
     },
     computed:{
         ...mapGetters({
-            categories : "categories",
+            tasks : "tasks",
         }),
     },
     methods: {
         ...mapActions({
-            loadCategoryListAction : "loadCategoryListAction",
+            loadCategoryTaskListAction : "loadCategoryTaskListAction",
         }),
         LoadList()
         {
             this.state = "LOADING";
-                this.loadCategoryListAction().then(() => {
+                this.loadCategoryTaskListAction(Number(this.id)).then(() => {
+                console.log(this.tasks);
                 this.state = "READY";
-                console.log(this.categories);
             })
             .catch((error) => {
                 console.log(error);
@@ -52,4 +59,3 @@ export default {
     }
 }
 </script>
-

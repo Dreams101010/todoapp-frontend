@@ -1,21 +1,60 @@
 <template>
   <div>
-      <div class='header'>
-      <router-link class="link" to='/'>Main page</router-link>
-      <router-link class="link" to='/category'>Categories</router-link>
+    <div v-if="this.state === 'READY'">
+        <div class='header'>
+          <router-link class="link" to='/'>Main page</router-link>
+          <router-link class="link" to='/category'>Categories</router-link>
+          <router-link class="link" to='/task/active'>Active tasks</router-link>
+          <router-link class="link" to='/task/complete'>Complete tasks</router-link>
+        </div>
+        <div class="sidenav">
+          <router-link class="link" v-bind:key="category.id" v-for="category in categories" :to="{ path : '/task/category/' + category.id}">{{category.title}}</router-link>
+        </div>
+        <router-view :key="$route.fullPath" class="main"></router-view>
     </div>
-    <div class="sidenav">
-      <router-link class="link" to='/'>Main page</router-link>
-      <router-link class="link" to='/category'>Categories</router-link>
+    <div v-if="this.state === 'ERROR'">
+      Error while loading the app.
+      <button @click="this.LoadCategories">Retry</button>
     </div>
-    <router-view class="main"></router-view>
   </div>
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex';
 
 export default {
   name: 'App',
+  data: function() {
+    return {
+      state: "INITIAL",
+    }
+  },
+  computed:{
+        ...mapGetters({
+            categories : "categories",
+        }),
+    },
+  methods: {
+        ...mapActions({
+            loadCategoryListAction : "loadCategoryListAction",
+        }),
+        LoadCategories()
+        {
+            this.state = "LOADING";
+                this.loadCategoryListAction().then(() => {
+                this.state = "READY";
+                console.log(this.categories);
+            })
+            .catch((error) => {
+                console.log(error);
+                this.state = "ERROR";
+            });
+        }
+    },
+    created()
+    {
+        this.LoadCategories();
+    }
 }
 </script>
 

@@ -21,6 +21,10 @@ const mutations = {
     {
         state.categories = payload;
     },
+    UPDATE_CATEGORY_ADD_FORM_FIELDS(state, payload)
+    {
+        state.addCategoryForm.fields = payload;
+    },
     UPDATE_CATEGORY_ADD_FORM_TITLE(state, payload)
     {
         state.addCategoryForm.fields.title = payload;
@@ -64,6 +68,15 @@ const actions = {
             .then((response) => resolve(response))
             .catch((error) => reject(error));
         });
+    },
+
+    clearTaskAddForm({commit})
+    {
+        var clear = {
+            title: "",
+            color: "#000000"
+        };
+        commit("UPDATE_CATEGORY_ADD_FORM_FIELDS", clear);
     },
 
     loadCategoryEditForm({commit}, payload)

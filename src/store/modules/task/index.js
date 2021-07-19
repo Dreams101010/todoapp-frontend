@@ -27,7 +27,7 @@ const state = {
 const mutations = {
     UPDATE_TASKS(state, payload)
     {
-        state.categories = payload;
+        state.tasks = payload;
     },
 
     UPDATE_TASK_ADD_FORM_TITLE(state, payload)
@@ -147,12 +147,26 @@ const actions = {
         return new Promise((resolve, reject) => {
             axiosModule.task.get.getTask(payload)
             .then((response) => {
-                console.log(response.data.category);
-                commit("UPDATE_TASK_EDIT_FORM_FIELDS", response.data.category);
+                console.log(response);
+                commit("UPDATE_TASK_EDIT_FORM_FIELDS", response.data.task);
                 resolve(response);
             })
             .catch((error) => reject(error));
         });
+    },
+
+    // load task for an edit form
+    clearTaskAddForm({commit})
+    {
+        var clear = {
+            title : "",
+            description : "",
+            createdAt: "",
+            isActive : false,
+            isComplete: false,
+            categoryId: 0
+        }
+        commit("UPDATE_TASK_EDIT_FORM_FIELDS", clear);
     },
 
     // edit a task
@@ -165,6 +179,16 @@ const actions = {
             .catch((error) => reject(error));
         });
     },
+
+    // eslint-disable-next-line no-unused-vars
+    taskRemove({commit}, payload)
+    {
+        return new Promise((resolve, reject) => {
+            axiosModule.task.post.removeTask(payload)
+            .then((response) => resolve(response))
+            .catch((error) => reject(error));
+        });
+    }
 }
 
 const getters = {
