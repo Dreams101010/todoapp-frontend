@@ -17,6 +17,7 @@
 
 <script>
 export default {
+    name: 'task-complete-list-item',
     props : ["item"],
     data : function() {
         return {

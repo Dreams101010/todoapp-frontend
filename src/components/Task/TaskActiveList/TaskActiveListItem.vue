@@ -17,6 +17,7 @@
 
 <script>
 export default {
+    name: 'task-active-list-item',
     props : ["item"],
     data : function() {
         return {

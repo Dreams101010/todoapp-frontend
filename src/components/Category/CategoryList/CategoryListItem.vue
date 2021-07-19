@@ -12,6 +12,7 @@
 
 <script>
 export default {
+    name: "category-list-item",
     props : ["item"],
     data : function() {
         return {

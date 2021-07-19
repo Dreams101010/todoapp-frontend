@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import CategoryList from '../components/Category/CategoryList/CategoryList.vue';
 import NotFound from '../components/NotFound.vue'
-import Main from '../components/Main.vue'
+import MainPage from '../components/MainPage.vue'
 import CategoryAddForm from '../components/Category/CategoryAddForm/CategoryAddForm.vue';
 import CategoryEditForm from '../components/Category/CategoryEditForm/CategoryEditForm.vue';
 import CategoryRemovePrompt from '../components/Category/CategoryRemovePrompt/CategoryRemovePrompt.vue';
@@ -17,7 +17,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component: Main
+            component: MainPage
         },
         {
             path: '/category',

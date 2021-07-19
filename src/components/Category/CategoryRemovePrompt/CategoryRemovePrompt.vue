@@ -17,6 +17,7 @@
 <script>
 import { mapActions } from 'vuex';
 export default {
+    name: "category-remove-prompt",
     data : function() {
         return {
             state : "READY",

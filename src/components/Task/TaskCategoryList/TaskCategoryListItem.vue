@@ -17,6 +17,7 @@
 
 <script>
 export default {
+    name: 'task-category-list-item',
     props : ["item"],
     data : function() {
         return {

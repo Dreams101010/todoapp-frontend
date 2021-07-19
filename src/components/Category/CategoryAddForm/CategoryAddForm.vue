@@ -38,7 +38,7 @@
 import {mapActions, mapGetters} from 'vuex';
 
 export default {
-    name: "Form",
+    name: "category-add-form",
     // Set error fields in data
     // Set state in data
     data: function () {

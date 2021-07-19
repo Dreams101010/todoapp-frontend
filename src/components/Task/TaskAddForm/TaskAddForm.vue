@@ -59,6 +59,7 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
+import DateHelper from '../../../helpers/DateHelper.js';
 
 export default {
     name: "task_add_form",
@@ -133,12 +134,6 @@ export default {
         {
             this.$router.go(-1);
         },
-        getDate() // TODO: put this in separate module
-        {
-            var date = new Date();
-            var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
-            return newDate;   
-        },
         OnFormSubmit(evt)
         {
             this.state = "SAVING";
@@ -151,7 +146,7 @@ export default {
             let form = {
                 title : this.fields.title,
                 description: this.fields.description,
-                createdAt: this.getDate(),
+                createdAt: DateHelper.getLocalDateNow(),
                 isActive: this.fields.isActive,
                 isComplete: this.fields.isComplete,
                 categoryId: this.fields.categoryId

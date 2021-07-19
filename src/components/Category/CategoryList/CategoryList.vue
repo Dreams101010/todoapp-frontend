@@ -18,6 +18,7 @@ import {mapActions, mapGetters} from 'vuex';
 import CategoryListItem from './CategoryListItem.vue';
 
 export default {
+    name: "category-list",
     components: { CategoryListItem },
     data: function() {
         return {

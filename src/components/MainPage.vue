@@ -1,9 +1,9 @@
 <template>
-    <p>Page not found</p>
+    <p>This is main page</p>
 </template>
 
 <script>
 export default {
-    name: 'not-found'
+    name: 'main-page'
 }
 </script>

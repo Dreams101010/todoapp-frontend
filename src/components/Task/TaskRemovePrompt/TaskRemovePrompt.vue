@@ -17,6 +17,7 @@
 <script>
 import { mapActions } from 'vuex';
 export default {
+    name: 'task-remove-prompt',
     data : function() {
         return {
             state : "READY",

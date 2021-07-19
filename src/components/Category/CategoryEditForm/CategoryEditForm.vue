@@ -48,7 +48,7 @@
 import {mapActions, mapGetters} from 'vuex';
 
 export default {
-    name: "CategoryEditForm",
+    name: "category-edit-form",
     props: ['id'],
     data: function() {
         return {
