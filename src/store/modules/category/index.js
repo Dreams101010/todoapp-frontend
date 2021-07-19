@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosModule from '../../../axios/AxiosModule.js';
 
 const state = {
     categories : [],
@@ -47,7 +47,7 @@ const actions = {
     loadCategoryListAction({commit})
     {
         return new Promise((resolve, reject) => {
-            axios.get("https://localhost:44374/api/Home/getCategories", { timeout : 1000 })
+            axiosModule.category.get.getCategories()
             .then((response) => {
                 commit("UPDATE_CATEGORIES", response.data.categories);
                 resolve(response);
@@ -60,7 +60,7 @@ const actions = {
     saveCategoryAddForm({commit}, payload)
     {
         return new Promise((resolve, reject) => {
-            axios.post("https://localhost:44374/api/Home/addCategory", payload, { timeout: 1000})
+            axiosModule.category.post.addCategory(payload)
             .then((response) => resolve(response))
             .catch((error) => reject(error));
         });
@@ -69,7 +69,7 @@ const actions = {
     loadCategoryEditForm({commit}, payload)
     {
         return new Promise((resolve, reject) => {
-            axios.get(`https://localhost:44374/api/Home/getCategory?id=${payload}`, { timeout: 1000})
+            axiosModule.category.get.getCategory(payload)
             .then((response) => {
                 console.log(response.data.category);
                 commit("UPDATE_CATEGORY_EDIT_FORM_FIELDS", response.data.category);
@@ -83,7 +83,7 @@ const actions = {
     saveCategoryEditForm({commit}, payload)
     {
         return new Promise((resolve, reject) => {
-            axios.post("https://localhost:44374/api/Home/editCategory", payload, { timeout: 1000})
+            axiosModule.category.post.editCategory(payload)
             .then((response) => resolve(response))
             .catch((error) => reject(error));
         });
@@ -93,7 +93,7 @@ const actions = {
     categoryRemove({commit}, payload)
     {
         return new Promise((resolve, reject) => {
-            axios.post(`https://localhost:44374/api/Home/removeCategory?id=${payload}`, { timeout: 1000})
+            axiosModule.category.post.removeCategory(payload)
             .then((response) => resolve(response))
             .catch((error) => reject(error));
         });
