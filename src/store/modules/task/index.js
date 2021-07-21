@@ -9,7 +9,7 @@ const state = {
             createdAt: "",
             isActive : false,
             isComplete: false,
-            categoryId: 0
+            categoryId: "0"
         },
     },
     editTaskForm : {
@@ -19,7 +19,7 @@ const state = {
             createdAt: "",
             isActive : false,
             isComplete : false,
-            categoryId : 0
+            categoryId : "0"
         },
     },
 };
@@ -164,7 +164,7 @@ const actions = {
             createdAt: "",
             isActive : false,
             isComplete: false,
-            categoryId: 0
+            categoryId: "0"
         }
         commit("UPDATE_TASK_EDIT_FORM_FIELDS", clear);
     },
@@ -185,6 +185,16 @@ const actions = {
     {
         return new Promise((resolve, reject) => {
             axiosModule.task.post.removeTask(payload)
+            .then((response) => resolve(response))
+            .catch((error) => reject(error));
+        });
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    taskEdit({commit}, payload)
+    {
+        return new Promise((resolve, reject) => {
+            axiosModule.task.post.editTask(payload)
             .then((response) => resolve(response))
             .catch((error) => reject(error));
         });

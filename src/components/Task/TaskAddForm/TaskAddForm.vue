@@ -15,7 +15,7 @@
                 <div class="field">
                     <label>Category</label>
                     <select @change="OnCategorySelectChange">
-                        <option disabled selected value="">Please select one</option>
+                        <option disabled selected value="0">Please select one</option>
                         <option v-bind:key="category.id" v-for="category in categories" :value="category.id">{{category.title}}</option>
                     </select>
                 </div>
@@ -90,7 +90,7 @@ export default {
         },
         isCategorySelected : function()
         {
-            return this.fields.category !== "";
+            return this.fields.categoryId !== "0";
         },
         isFormValid : function () 
         {

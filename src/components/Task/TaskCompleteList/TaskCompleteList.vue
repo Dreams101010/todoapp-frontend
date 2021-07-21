@@ -5,7 +5,7 @@
         </div>
         <div v-if="this.state === 'READY'">
             <button @click="$router.push('/task/add')">Add</button>
-            <task-complete-list-item v-for="item in tasks" v-bind:key="item.id" :item="item"></task-complete-list-item>
+            <task-list-item v-for="item in tasks" v-bind:key="item.id" :item="item"></task-list-item>
         </div>
         <div v-if="this.state === 'LOADING_ERROR'">
             An error has occured while loading the task list.
@@ -15,16 +15,13 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
-import TaskCompleteListItem from './TaskCompleteListItem.vue'
+import TaskListItem from '../TaskListItem.vue'
 
 export default {
     name: "task-complete-list",
-    props : {
-        id : String,
-    },
     components:
     {
-        TaskCompleteListItem
+        TaskListItem
     },
     data: function() {
         return {

@@ -23,7 +23,17 @@ export default {
             state : "READY",
         }
     },
-    props: ['id'],
+    props: {
+        id : {
+            type : String,
+            required: true,
+            validator : function(value)
+            {
+                var number = Number(value);
+                return Number.isInteger(number) || number > 0;
+            }
+        }
+    },
     methods: {
         ...mapActions(
             {

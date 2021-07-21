@@ -11,9 +11,26 @@
 </template>
 
 <script>
+
 export default {
     name: "category-list-item",
-    props : ["item"],
+    props: {
+        item : {
+            type : Object,
+            required: true,
+            validator : function (value)
+            {
+                if (value.id && value.title && value.color)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    },
     data : function() {
         return {
             styleObject : {

@@ -49,7 +49,17 @@ import {mapActions, mapGetters} from 'vuex';
 
 export default {
     name: "category-edit-form",
-    props: ['id'],
+    props: {
+        id : {
+            type : String,
+            required: true,
+            validator : function(value)
+            {
+                var number = Number(value);
+                return Number.isInteger(number) || number > 0;
+            }
+        }
+    },
     data: function() {
         return {
             state : "INITIAL",

@@ -71,7 +71,16 @@ import {mapActions, mapGetters} from 'vuex';
 
 export default {
     name: "task_edit_form",
-    props: ['id'],
+    props: {
+        id : {
+            type : Number,
+            required: true,
+            validator : function(value)
+            {
+                return Number.isInteger(value) || value > 0;
+            }
+        }
+    },
     data: function() {
         return {
             state : "READY",
