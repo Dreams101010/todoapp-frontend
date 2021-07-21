@@ -1,58 +1,79 @@
 <template>
     <div>
-        <div class="mainForm" v-if="state === 'READY' || state === 'SAVING_ERROR' || state === 'SAVING'">
-            <form>
-                <div class="field">
-                    <label>Title</label>
-                    <input @input="OnTitleInputChange" type="text" placeholder="Enter title">
-                    <p v-if="isTitleEmpty">Title cannot be empty</p>
+        <div v-if="state === 'READY' || state === 'SAVING_ERROR' || state === 'SAVING'">
+            <div class="formHeader">
+                <div class="is-size-4">Add a task</div>
+            </div>
+            <div class="mainForm">
+                <form>
+                    <div class="field">
+                        <label><b>Title</b></label>
+                        <div class="control">
+                            <input class="input is-primary" @input="OnTitleInputChange" type="text" placeholder="Enter title">
+                        </div>
+                        <div class="validation-error" v-if="isTitleEmpty">Title cannot be empty</div>
+                    </div>
+                    <div class="field">
+                        <label><b>Description</b></label>
+                        <div class="control">
+                            <textarea class="textarea is-primary" @input="OnDescriptionTextareaChange" placeholder="Enter description"></textarea>
+                        </div>
+                        <div class="validation-error" v-if="isDescriptionEmpty">Description cannot be empty</div>
+                    </div>
+                    <div class="field">
+                        <label><b>Category</b></label>
+                        <div class="control">
+                            <select class="select" @change="OnCategorySelectChange">
+                                <option disabled selected value="0">Please select one</option>
+                                <option v-bind:key="category.id" v-for="category in categories" :value="category.id">{{category.title}}</option>
+                            </select>
+                        </div>
+                        <div class="validation-error" v-if="!isCategorySelected">You must select a category</div>
+                    </div>
+                    <div class="field">
+                        <label><b>Active</b></label>
+                        <div class="control checkbox-div">
+                            <input class="checkbox" type="checkbox" @change="OnActiveCheckboxChange">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label><b>Complete</b></label>
+                        <div class="control checkbox-div">
+                            <input class="checkbox" type="checkbox" @change="OnCompleteCheckboxChange">
+                        </div>
+                    </div>
+                    <div>
+                        <button class="button is-primary" :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Submit form</button>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <div class="validation-error">
+                    {{errors.errorMessage}}
                 </div>
-                <div class="field">
-                    <label>Description</label>
-                    <input @input="OnDescriptionInputChange" type="text" placeholder="Enter description">
-                    <p v-if="isDescriptionEmpty">Description cannot be empty</p>
+                <div class="validation-error">
+                    {{errors.titleError}}
                 </div>
-                <div class="field">
-                    <label>Category</label>
-                    <select @change="OnCategorySelectChange">
-                        <option disabled selected value="0">Please select one</option>
-                        <option v-bind:key="category.id" v-for="category in categories" :value="category.id">{{category.title}}</option>
-                    </select>
+                <div class="validation-error">
+                    {{errors.descriptionError}}
                 </div>
-                <div class="field">
-                    <label>Active</label>
-                    <input type="checkbox" @change="OnActiveCheckboxChange">
+                <div class="validation-error">
+                    {{errors.categoryError}}
                 </div>
-                <div class="field">
-                    <label>Complete</label>
-                    <input type="checkbox" @change="OnCompleteCheckboxChange">
-                </div>
-                <div class="button">
-                    <button :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Submit form</button>
-                </div>
-            </form>
-        </div>
-        <div>
-            <p>
-                {{errors.titleError}}
-            </p>
-            <p>
-                {{errors.descriptionError}}
-            </p>
-            <p>
-                {{errors.categoryError}}
-            </p>
+            </div>
         </div>
         <div v-if="state === 'SAVE_SUCCESS'">
-            <p>
-                Save has been successful
-                <button @click="OnBackClick">Go back</button>
-            </p>
+            <div>
+                Task has been added
+            </div>
+            <div>
+                <button class="button is-primary" @click="OnBackClick">Go back</button>
+            </div>
         </div>
         <div v-if="state === 'SAVING_ERROR'">
-            <p>
-                Error while saving (couldn't connect to server)
-            </p>
+            <div>
+                Couldn't add task (couldn't connect to server)
+            </div>
         </div>
     </div>
 </template>
@@ -67,6 +88,7 @@ export default {
         return {
             state : "READY",
             errors : {
+                errorMessage: "",
                 titleError : "",
                 descriptionError: "",
                 categoryError: "",
@@ -114,7 +136,7 @@ export default {
         {
             this.$store.commit("UPDATE_TASK_ADD_FORM_TITLE", evt.target.value);
         },
-        OnDescriptionInputChange(evt)
+        OnDescriptionTextareaChange(evt)
         {
             this.$store.commit("UPDATE_TASK_ADD_FORM_DESCRIPTION", evt.target.value);
         },
@@ -159,11 +181,9 @@ export default {
                 })
                 .catch((error) => {
                     // handle saving errors here: 404, 400, Timeout
-                    console.log(error.response);
                     if (error.code === "ECONNABORTED")
                     {
                         this.state = "SAVING_ERROR";
-                        console.log("Timeout");
                         return;
                     }
                     if (error.response.status === 400)
@@ -171,21 +191,28 @@ export default {
                         this.state = "READY";
                         if (error.response.data.errors.Title)
                         {
-                            this.errors.titleError = error.response.data.errors.Id[0];
+                            this.errors.titleError = error.response.data.errors.Title[0];
                         }
                         if (error.response.data.errors.Description)
                         {
-                            this.errors.descriptionError = error.response.data.errors.Id[0];
+                            this.errors.descriptionError = error.response.data.errors.Description[0];
                         }
                         if (error.response.data.errors.CategoryId)
                         {
-                            this.errors.categoryError = error.response.data.errors.Id[0];
+                            this.errors.categoryError = error.response.data.errors.CategoryId[0];
+                        }
+                    }
+                    else if (error.response.status === 500)
+                    {
+                        this.state = "READY";
+                        if (error.response.data.message)
+                        {
+                            this.errors.errorMessage = error.response.data.message;
                         }
                     }
                     else if (error.response.status === 404)
                     {
                         this.state = "NOT_FOUND";
-                        console.log("404");
                     }
                 });
         },
@@ -207,3 +234,21 @@ export default {
     }
 }
 </script>
+
+<style>
+    .checkbox-div
+    {
+        display: inline;
+        margin-left: 5px;
+    }
+
+    .mainForm
+    {
+        text-align: left;
+    }
+
+    .validation-error
+    {
+        color: red;
+    }
+</style>

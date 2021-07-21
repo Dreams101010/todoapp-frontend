@@ -1,35 +1,48 @@
 <template>
     <div>
+        <div class="formHeader">
+            <div class="is-size-4">Add a category</div>
+        </div>
         <div class="mainForm" v-if="state === 'READY' || state === 'SAVING_ERROR' || state === 'SAVING'">
             <form>
                 <div class="field">
-                    <label>Title</label>
-                    <input @input="OnTitleInputChange" type="text" placeholder="Enter title">
-                    <p v-if="isTitleEmpty">Title cannot be empty</p>
+                    <label><b>Title</b></label>
+                    <div class="control">
+                        <input class="input is-primary" @input="OnTitleInputChange" type="text" placeholder="Enter title">
+                    </div>
+                    <div class="validation-error" v-if="isTitleEmpty">Title cannot be empty</div>
                 </div>
                 <div class="field">
-                    <label>Color</label>
-                    <input value="'#000000'" @input="OnColorInputChange" type="color">
+                    <div>
+                        <label><b>Color</b></label>
+                        </div>
+                    <div>
+                        <input class="input is-primary" value="'#000000'" @input="OnColorInputChange" type="color">
+                    </div>
                 </div>
-                <div class="button">
-                    <button :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Submit form</button>
+                <div>
+                    <button class="button is-primary" :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Add a category</button>
                 </div>
             </form>
         </div>
         <div>
-            <p>
+            <div class="validation-error">
+                {{errors.errorMessage}}
+            </div>
+            <div class="validation-error">
                 {{errors.titleError}}
-            </p>
+            </div>
         </div>
         <div v-if="state === 'SAVE_SUCCESS'">
-            <p>
-                Save has been successful
-            </p>
+            <div>
+                Category has been added
+                <div><router-link to="/category">Back to categories</router-link></div>
+            </div>
         </div>
         <div v-if="state === 'SAVING_ERROR'">
-            <p>
-                Error while saving (couldn't connect to server)
-            </p>
+            <div>
+                Could not add category (couldn't connect to server)
+            </div>
         </div>
     </div>
 </template>
@@ -45,7 +58,8 @@ export default {
         return {
             state : "READY",
             errors : {
-                titleError : ""
+                titleError : "",
+                errorMessage: "",
             }
         }
     },
@@ -67,10 +81,12 @@ export default {
     methods : {
         ...mapActions({
             saveFormAction : "saveCategoryAddForm",
+            loadCategoryListAction : "loadCategoryListAction"
         }),
         ClearErrorFields()
         {
             this.errors.titleError = "";
+            this.errors.errorMessage = "";
         },
         OnTitleInputChange(evt)
         {
@@ -94,10 +110,19 @@ export default {
                 color : this.fields.color,
             }
             this.saveFormAction(form)
-                .then((response) => 
+                .then(() => 
                 {
-                    console.log(response);
                     this.state = "SAVE_SUCCESS";
+                    this.loadCategoryListAction()
+                        .then(() => 
+                        {
+                            console.log("loaded categories")
+                        })
+                        .catch(() => {
+                            console.log("failed to load categories");
+                            this.state = "SAVING_ERROR";
+                            // handle saving errors here: 404, 400, Timeout
+                        });
                 })
                 .catch((error) => {
                     // handle saving errors here: 404, 400, Timeout
@@ -113,7 +138,15 @@ export default {
                         this.state = "READY";
                         if (error.response.data.errors.Title)
                         {
-                            this.errors.titleError = error.response.data.errors.Id[0];
+                            this.errors.titleError = error.response.data.errors.Title[0];
+                        }
+                    }
+                    if (error.response.status === 500)
+                    {
+                        this.state = "READY";
+                        if (error.response.data.message)
+                        {
+                            this.errors.errorMessage = error.response.data.message;
                         }
                     }
                     else if (error.response.status === 404)
@@ -137,3 +170,15 @@ export default {
     },
 }
 </script>
+
+<style>
+    .mainForm
+    {
+        text-align: left;
+    }
+
+    .validation-error
+    {
+        color: red;
+    }
+</style>

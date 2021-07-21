@@ -2,10 +2,19 @@
     <div>
         <div v-if="this.state === 'LOADING'">
             Loading... Please wait.
-        </div>
+        </div>        
         <div v-if="this.state === 'READY'">
-            <button @click="$router.push('/task/add')">Add</button>
-            <task-list-item v-for="item in tasks" v-bind:key="item.id" :item="item"></task-list-item>
+            <div class="columns is-vcentered">
+                <div class="column text-left-align">
+                    <div class="is-size-4">Tasks in category:</div>
+                </div>
+                <div class="column text-right-align">
+                    <button class="button is-primary category-list-button" @click="$router.push('/task/add')">Add task</button>
+                </div>
+            </div>
+            <div class="item-section">
+                <task-list-item v-for="item in tasks" v-bind:key="item.id" :item="item"></task-list-item>
+            </div>
         </div>
         <div v-if="this.state === 'LOADING_ERROR'">
             An error has occured while loading the task list.

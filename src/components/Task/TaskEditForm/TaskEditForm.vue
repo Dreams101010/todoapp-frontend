@@ -1,67 +1,84 @@
 <template>
     <div>
-        <div class="mainForm" v-if="state === 'READY' || state === 'SAVING_ERROR' || state === 'SAVING'">
-            <form>
-                <div class="field">
-                    <label>Title</label>
-                    <input :value="fields.title" @input="OnTitleInputChange" type="text" placeholder="Enter title">
-                    <p v-if="isTitleEmpty">Title cannot be empty</p>
+        <div v-if="state === 'READY' || state === 'SAVING_ERROR' || state === 'SAVING'">
+            <div class="formHeader">
+                <div class="is-size-4">Edit a task</div>
+            </div>
+            <div class="mainForm">
+                <form>
+                    <div class="field">
+                        <label><b>Title</b></label>
+                        <div class="control">
+                            <input :value="this.fields.title" class="input is-primary" @input="OnTitleInputChange" type="text" placeholder="Enter title">
+                        </div>
+                        <div class="validation-error" v-if="isTitleEmpty">Title cannot be empty</div>
+                    </div>
+                    <div class="field">
+                        <label><b>Description</b></label>
+                        <div class="control">
+                            <textarea 
+                                :value="this.fields.description" 
+                                class="input is-primary" 
+                                @input="OnDescriptionTextareaChange" 
+                                placeholder="Enter description">
+                            </textarea>
+                        </div>
+                        <div class="validation-error" v-if="isDescriptionEmpty">Description cannot be empty</div>
+                    </div>
+                    <div class="field">
+                        <label><b>Category</b></label>
+                        <div class="control">
+                            <select :value="this.fields.categoryId" class="select" @change="OnCategorySelectChange">
+                                <option disabled selected value="0">Please select one</option>
+                                <option v-bind:key="category.id" v-for="category in categories" :value="category.id">{{category.title}}</option>
+                            </select>
+                        </div>
+                        <div class="validation-error" v-if="!isCategorySelected">You must select a category</div>
+                    </div>
+                    <div class="field">
+                        <label><b>Active</b></label>
+                        <div class="control checkbox-div">
+                            <input :checked="this.fields.isActive" class="checkbox" type="checkbox" @change="OnActiveCheckboxChange">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label><b>Complete</b></label>
+                        <div class="control checkbox-div">
+                            <input :checked="this.fields.isComplete" class="checkbox" type="checkbox" @change="OnCompleteCheckboxChange">
+                        </div>
+                    </div>
+                    <div>
+                        <button class="button is-primary" :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Submit form</button>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <div class="validation-error">
+                    {{errors.errorMessage}}
                 </div>
-                <div class="field">
-                    <label>Description</label>
-                    <input :value="fields.description" @input="OnDescriptionInputChange" type="text" placeholder="Enter description">
-                    <p v-if="isDescriptionEmpty">Description cannot be empty</p>
+                <div class="validation-error">
+                    {{errors.titleError}}
                 </div>
-                <div class="field">
-                    <label>Category</label>
-                    <select :value="fields.categoryId" @change="OnCategorySelectChange">
-                        <option disabled value="">Please select one</option>
-                        <option v-bind:key="category.id" v-for="category in categories" :value="category.id">{{category.title}}</option>
-                    </select>
+                <div class="validation-error">
+                    {{errors.descriptionError}}
                 </div>
-                <div class="field">
-                    <label>Active</label>
-                    <input type="checkbox" :checked="fields.isActive" @change="OnActiveCheckboxChange">
+                <div class="validation-error">
+                    {{errors.categoryError}}
                 </div>
-                <div class="field">
-                    <label>Complete</label>
-                    <input type="checkbox" :checked="fields.isComplete" @change="OnCompleteCheckboxChange">
-                </div>
-                <div class="button">
-                    <button :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Submit form</button>
-                </div>
-            </form>
-        </div>
-        <div>
-            <p>
-                {{errors.titleError}}
-            </p>
-            <p>
-                {{errors.descriptionError}}
-            </p>
-            <p>
-                {{errors.categoryError}}
-            </p>
-        </div>
-        <div v-if="state === 'LOADING'">
-            <p>
-                Loading...
-            </p>
-        </div>
-        <div class="formError" v-if="state === 'LOADING_ERROR'">
-            <p>
-                Error while trying to load form.
-            </p>
-            <button type="button" @click="LoadForm">Retry</button>
+            </div>
         </div>
         <div v-if="state === 'SAVE_SUCCESS'">
-            <div>Save has been successful</div>
-            <button @click="OnBackClick">Go back</button>
+            <div>
+                Task has been edited
+            </div>
+            <div>
+                <button class="button is-primary" @click="OnBackClick">Go back</button>
+            </div>
         </div>
         <div v-if="state === 'SAVING_ERROR'">
-            <p>
-                Error while saving (couldn't connect to server)
-            </p>
+            <div>
+                Couldn't edit task (couldn't connect to server)
+            </div>
         </div>
     </div>
 </template>
@@ -85,6 +102,7 @@ export default {
         return {
             state : "READY",
             errors : {
+                errorMessage: "",
                 titleError : "",
                 descriptionError: "",
                 categoryError: "",
@@ -127,7 +145,7 @@ export default {
         {
             this.$store.commit("UPDATE_TASK_EDIT_FORM_TITLE", evt.target.value);
         },
-        OnDescriptionInputChange(evt)
+        OnDescriptionTextareaChange(evt)
         {
             this.$store.commit("UPDATE_TASK_EDIT_FORM_DESCRIPTION", evt.target.value);
         },
@@ -194,6 +212,14 @@ export default {
                         if (error.response.data.errors.CategoryId)
                         {
                             this.errors.categoryError = error.response.data.errors.Id[0];
+                        }
+                    }
+                    else if (error.response.status === 500)
+                    {
+                        this.state = "READY";
+                        if (error.response.data.message)
+                        {
+                            this.errors.errorMessage = error.response.data.message;
                         }
                     }
                     else if (error.response.status === 404)

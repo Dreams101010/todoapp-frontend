@@ -1,17 +1,19 @@
 <template>
     <div>
-        <div>
-            <div>{{this.item.title}}</div>
-            <div>{{this.item.description}}</div>
-            <div>{{new Date(this.item.createdAt).toLocaleString()}}</div>
-            <div>Active: <input :checked="this.item.isActive" type="checkbox" @change="OnActiveCheckboxChange" v-bind:disabled="isCheckboxDisabled"></div>
-            <div>Complete: <input :checked="this.item.isComplete" type="checkbox" @change="OnCompleteCheckboxChange" v-bind:disabled="isCheckboxDisabled"></div>
-            <div>Category: {{this.item.categoryTitle}}</div>
-        </div>
-        <div>
-            <button @click="$router.push('/task/edit/' + item.id)">Edit</button>
-            <button @click="$router.push('/task/remove/' + item.id)">Remove</button>
-        </div>
+        <div class="item columns">
+            <div class="column is-three-quarters title-area">
+                <div><b>{{this.item.title}}</b></div>
+                <div class="div-description">{{this.item.description}}</div>
+                <div>{{new Date(this.item.createdAt).toLocaleString()}}</div>
+                <div>Active: <input :checked="this.item.isActive" type="checkbox" @change="OnActiveCheckboxChange" v-bind:disabled="isCheckboxDisabled"></div>
+                <div>Complete: <input :checked="this.item.isComplete" type="checkbox" @change="OnCompleteCheckboxChange" v-bind:disabled="isCheckboxDisabled"></div>
+                <div>Category: <span v-bind:style="styleObject">{{this.item.categoryTitle}}</span></div>
+            </div>
+            <div class="column is-one-quarter button-area">
+                <button class="button is-primary task-list-item-button" @click="$router.push('/task/edit/' + item.id)">Edit</button>
+                <button class="button is-danger task-list-item-button" @click="$router.push('/task/remove/' + item.id)">Remove</button>
+            </div>
+    </div>
     </div>
 </template>
 
@@ -33,6 +35,15 @@ export default {
             required: true,
             validator : function (value)
             {
+                console.log(value.id);
+                console.log(value.title);
+                console.log(value.description);
+                console.log(value.createdAt);
+                console.log(value.isActive);
+                console.log(value.isComplete);
+                console.log(value.categoryId);
+                console.log(value.categoryTitle);
+                console.log(value.categoryColor);
                 if (value.id && value.title && value.description &&
                     value.createdAt && value.isActive && value.isComplete && 
                     value.categoryId && value.categoryTitle && value.categoryColor)
@@ -48,7 +59,10 @@ export default {
     },
     data : function() {
         return {
-            state: "READY"
+            state: "READY",
+                styleObject : {
+                color : this.item.categoryColor,
+            }
         }
     },
     methods: {
@@ -121,5 +135,31 @@ export default {
 <style>
     button {
         margin-right: 5px;
+    }
+    .title-area
+    {
+        text-align: left;
+    }
+    .button-area
+    {
+        text-align: right;
+    }
+    .task-list-item-button {
+        margin: 5px
+    }
+    .item
+    {
+        margin-left: 200px;
+        border-top: 1px;
+        border-bottom: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        border-top-color: rgb(0, 0, 0);
+        border-style: solid;
+    }
+    .div-description
+    {
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 </style>

@@ -1,25 +1,37 @@
 <template>
     <div>
+        <div class="formHeader">
+            <div class="is-size-4">Edit a category</div>
+        </div>
         <div class="mainForm" v-if="state === 'READY' || state === 'SAVING_ERROR' || state === 'SAVING'">
             <form>
-               <div class="field">
-                    <label>Title</label>
-                    <input :value="fields.title" @input="OnTitleInputChange" type="text" placeholder="Enter title">
-                    <p v-if="isTitleEmpty">Title cannot be empty</p>
+                <div class="field">
+                    <label><b>Title</b></label>
+                    <div class="control">
+                        <input :value="fields.title" class="input is-primary" @input="OnTitleInputChange" type="text" placeholder="Enter title">
+                    </div>
+                    <div class="validation-error" v-if="isTitleEmpty">Title cannot be empty</div>
                 </div>
                 <div class="field">
-                    <label>Color</label>
-                    <input :value="fields.color" @input="OnColorInputChange" type="color">
+                    <div>
+                        <label><b>Color</b></label>
+                        </div>
+                    <div>
+                        <input :value="fields.color" class="input is-primary" @input="OnColorInputChange" type="color">
+                    </div>
                 </div>
-                <div class="button">
-                    <button :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Submit form</button>
+                <div>
+                    <button class="button is-primary" :disabled="!isFormValid || state == 'SAVING'" type="submit" @click="OnFormSubmit">Edit a category</button>
                 </div>
             </form>
         </div>
         <div>
-            <p>
+            <div class="validation-error">
+                {{errors.errorMessage}}
+            </div>
+            <div class="validation-error">
                 {{errors.titleError}}
-            </p>
+            </div>
         </div>
         <div v-if="state === 'LOADING'">
             <p>
@@ -33,12 +45,12 @@
             <button type="button" @click="LoadForm">Retry</button>
         </div>
         <div v-if="state === 'SAVE_SUCCESS'">
-            <div>Save has been successful</div>
+            <div>Category has been edited</div>
             <div><router-link to="/category">Back to categories</router-link></div>
         </div>
         <div v-if="state === 'SAVING_ERROR'">
             <p>
-                Error while saving (couldn't connect to server)
+                Could not edit category (couldn't connect to server)
             </p>
         </div>
     </div>
@@ -85,7 +97,8 @@ export default {
     methods : {
         ...mapActions({
             loadFormAction: "loadCategoryEditForm",
-            saveFormAction: "saveCategoryEditForm"
+            saveFormAction: "saveCategoryEditForm",
+            loadCategoryListAction : "loadCategoryListAction"
         }),
         ClearErrorFields()
         {
@@ -118,6 +131,15 @@ export default {
                 {
                     console.log(response);
                     this.state = "SAVE_SUCCESS";
+                    this.loadCategoryListAction()
+                        .then(() => 
+                        {
+                            console.log("loaded categories")
+                        })
+                        .catch(() => {
+                            this.state = "LOADING_ERROR";
+                            // handle saving errors here: 404, 400, Timeout
+                        });
                 })
                 .catch((error) => {
                     // handle saving errors here: 404, 400, Timeout
@@ -133,7 +155,15 @@ export default {
                         this.state = "READY";
                         if (error.response.data.errors.Title)
                         {
-                            this.errors.idError = error.response.data.errors.Id[0];
+                            this.errors.titleError = error.response.data.errors.Title[0];
+                        }
+                    }
+                    if (error.response.status === 500)
+                    {
+                        this.state = "READY";
+                        if (error.response.data.message)
+                        {
+                            this.errors.errorMessage = error.response.data.message;
                         }
                     }
                     else if (error.response.status === 404)
@@ -172,3 +202,15 @@ export default {
     }
 }
 </script>
+
+<style>
+    .mainForm
+    {
+        text-align: left;
+    }
+
+    .validation-error
+    {
+        color: red;
+    }
+</style>

@@ -1,15 +1,17 @@
 <template>
     <div>
         <div v-if="this.state === 'READY'" class="mainDialog">
-            <div>Do you want to delete this category?</div>
+            <div class="is-size-4">Do you want to delete this category?</div>
             <div>
-                <button @click="onDelete">Yes</button>
-                <button @click="onCancel">No</button>
+                <button class="button is-danger remove-prompt-button" @click="onDelete">Yes</button>
+                <button class="button is-primary remove-prompt-button" @click="onCancel">No</button>
             </div>
         </div>
         <div v-if="this.state === 'ERROR'" class="errorMessage">
-            <div>An error has occured</div>
-            <button @click="onCancel">Go back</button>
+            <div>{{this.errorMessage}}</div>
+            <div>
+                <button class="button is-primary" @click="onCancel">Go back</button>
+            </div>
         </div>
     </div>
 </template>
@@ -21,6 +23,7 @@ export default {
     data : function() {
         return {
             state : "READY",
+            errorMessage : "",
         }
     },
     props: {
@@ -44,9 +47,41 @@ export default {
         {
             this.categoryRemove(this.id)
                 .then(() => this.$router.push("/category"))
-                .catch(() => this.state = "ERROR");
-                // TODO: handle 404
-                // TODO: handle case when category cannot be removed because it still has tasks
+                .catch((error) => 
+                {
+                    console.log("ERROR");
+                    console.log(error.response);
+                    if (error.code === "ECONNABORTED")
+                    {
+                        this.errorMessage = "Could not connect to the server.";
+                        return;
+                    }
+                    if (error.response.status === 400)
+                    {
+                        this.state = "ERROR";
+                        this.errorMessage = "Client error has occured";
+                    }
+                    if (error.response.status === 500)
+                    {
+                        this.state = "ERROR";
+                        if (error.response.data.message)
+                        {
+                            if (error.response.data.message === "Error: Foreign key violation")
+                            {
+                                this.errorMessage = "Cannot remove category which contains tasks.";
+                            }
+                            else
+                            {
+                                this.errorMessage = "Server error has occured.";
+                            }
+                        }
+                    }
+                    else if (error.response.status === 404)
+                    {
+                        this.state = "ERROR";
+                        this.errorMessage = "Could not find the category which you're trying to remove.";
+                    }
+                });
         },
         onCancel()
         {
@@ -55,3 +90,9 @@ export default {
     }
 }
 </script>
+
+<style>
+    .remove-prompt-button {
+        margin: 5px;
+    }
+</style>
