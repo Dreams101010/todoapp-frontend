@@ -1,4 +1,4 @@
-# todoapp
+This is a frontend part of ToDoApp project made to track tasks and goals
 
 ## Project setup
 ```
